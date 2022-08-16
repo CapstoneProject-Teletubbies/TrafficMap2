@@ -34,7 +34,7 @@ const SearchBar = (props) => {
 
     const searchBuilding = (props1, props2) => {
         const building = axios.create({
-            baseURL: 'http://localhost:9000/'
+            baseURL: 'http://dev.chaerin.shop:9000/'
         })
         building.post('/api/find/address', null, {params: {keyword: searchValue, latitude: mylocation.latitude, longitude: mylocation.longitude}})
         .then(function(res){

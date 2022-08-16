@@ -14,7 +14,7 @@ const BuildingInfo = (props) => {
 
     const searchsubwayinfo = (subwaynm) => {
         const subwayinfo = axios.create({
-            baseURL: 'http://localhost:9000/'
+            baseURL: 'http://dev.chaerin.shop:9000/'
         })
         subwayinfo.post('/api/subway', null, {params: {name: subwaynm}})
         .then(function(res){
