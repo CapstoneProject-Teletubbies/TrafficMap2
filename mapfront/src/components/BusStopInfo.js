@@ -11,7 +11,7 @@ const BusStopInfo = (props) => {
 
     const searchbusstopinfo = () => {
         const busstopinfo = axios.create({
-            baseURL: 'http://dev.chaerin.shop:9000/'
+            baseURL: 'https://dev.chaerin.shop:443/'
         })
         busstopinfo.post('/api/bus/busArrival', null, {params: {busStopId: props.obj.bstopid}})
         .then(function(res){

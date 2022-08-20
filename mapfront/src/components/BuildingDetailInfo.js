@@ -26,7 +26,7 @@ const BuildingDetailInfo = (props) => {
     const handlesubwaymapbutton = () => {
         const subwayname = (props.props.name.split('역'))[0];
         const subwaymap = axios.create({
-            baseURL: 'http://dev.chaerin.shop:9000/'
+            baseURL: 'https://dev.chaerin.shop:443/'
         })
         subwaymap.post('/api/subway/photo', null, {params: {name: subwayname}})
         .then(function(res){
