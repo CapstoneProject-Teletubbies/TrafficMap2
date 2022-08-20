@@ -29,7 +29,7 @@ const BuildingInfo = (props) => {
      const searchBusRouteInfo = () => {
         console.log(props.obj.routeid);
         const busrouteinfo = axios.create({
-            baseURL: 'http://localhost:9000/'
+            baseURL: 'http://dev.chaerin.shop:9000/'
         })
         busrouteinfo.post('/api/bus/route/detail', null, {params: {routeId: props.obj.routeid}})
         .then(function(res){
