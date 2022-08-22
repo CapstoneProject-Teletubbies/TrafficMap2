@@ -1,19 +1,15 @@
 import React, {useState, useEffect } from 'react';
 import '../css/search.css';
 import '../css/input.css'
-import ReactDOM from "react-dom";
 import SearchBar from "../components/SearchBar";
 import BuildingInfo from '../components/BuildingInfo';
 import BusInfo from '../components/BusInfo';
 import BusStopInfo from '../components/BusStopInfo';
 import {useLocation} from 'react-router';
 import { useNavigate } from "react-router-dom";
-import Button from "../components/Button";
-import map from "../images/map.png";
-import back from "../images/backicon.png"
-import axios from "axios";
 
- function Search() {
+
+ function FindSearch() {
     const [text, setText] = useState(' ');
     const [buildingList, setBuildingList] = useState([]);
     const [busList, setBusList] = useState([]);
@@ -21,6 +17,10 @@ import axios from "axios";
     const [mylocation, setMylocation] = useState();
     const navigate = useNavigate();
     const location = useLocation();
+
+    const [startName, setStartName] = useState();
+    const [endName, setEndName] = useState();
+
     const keyword = location.state.keyword;
     const onChange = (e) => {
         setText(e.target.value);
@@ -119,4 +119,4 @@ import axios from "axios";
         </div>
     );
  }
- export default Search;
+ export default FindSearch;

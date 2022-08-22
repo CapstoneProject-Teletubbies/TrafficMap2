@@ -16,6 +16,7 @@ public class BusController {
     public String test() { // 테스트용
         return "연결 성공";
     }
+
 //    @GetMapping(value="/bus/busStop")
     @RequestMapping(value="/bus/busStop", method = {RequestMethod.POST})
     public List<BusStopDto> GetBusStop(String busStopName) { // 버스정류소 명으로 정류장 검색
