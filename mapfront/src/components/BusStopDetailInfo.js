@@ -8,6 +8,7 @@ import proj4 from 'proj4';
 import axios from 'axios';
 import BusInfo from '../components/BusInfo'
 
+const baseurl = 'https://dev.chaerin.shop:9000/'
 
 const BusStopDetailInfo = (props)=>{
     const [startXY, setStartXY] = useState();
@@ -26,7 +27,7 @@ const BusStopDetailInfo = (props)=>{
 
     const searchBusNum = (routeid) => {
         const busnum = axios.create({
-            baseURL: 'https://dev.chaerin.shop:9000/'
+            baseURL: baseurl
         })
         busnum.post('api/bus/route/detail/', null, {params: {routeId: routeid}})
         .then(function(res){

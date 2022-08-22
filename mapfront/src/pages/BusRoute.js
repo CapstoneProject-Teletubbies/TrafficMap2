@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import refresh from "../images/refresh.png"
 import { ModalBody } from 'react-bootstrap';
 
+const baseurl = 'https://dev.chaerin.shop:9000/'
+
 function BusRoute(){
     const location = useLocation();
     const [busRoute, setBusRoute] = useState(); 
@@ -47,7 +49,7 @@ function BusRoute(){
 
     const realtimeBus = () => {
         const buslocation = axios.create({
-            baseURL: 'https://dev.chaerin.shop:9000/'
+            baseURL: baseurl
         })
         buslocation.post('/api/bus/location', null, {params: {routeId: busInfo.routeid}})
             .then(function(res){
