@@ -14,6 +14,9 @@ import target from "../images/location.png"
 import ph from "../images/placeholder.png"
 
 import mylocation from "../images/mylocation.png"
+import eletrue from "../images/placeholder_ee.png"
+import elefalse from "../images/placeholder_ex.png"
+
 import { render } from '@testing-library/react';
 
 let what;
@@ -26,6 +29,7 @@ function ResultSearch() {
     const [plength, setPlength] = useState();
     const [markerlat, setMarkerLat] = useState([]);
     const [markerlng, setMarkerLng] = useState([]);
+    const [iselevator, setIsElevator] = useState([]);
     const [markerlist, setMarkerList] = useState([]);
     const [choosemarker, setChooseMarker] = useState();
 
@@ -93,8 +97,8 @@ function ResultSearch() {
           if(ref.current && !ref.current.contains(event.target)){
             const mytest = document.getElementById('test');
             what = mytest.innerText;
-            setChooseMarker(what);
             const notmarker = parseInt(what);
+            setChooseMarker(notmarker);
             console.log(`select의 외부 클릭을 감지!`);
             if(!what){
               setChooseMarker(null);
@@ -135,6 +139,11 @@ function ResultSearch() {
         markerlng.push(buildingList[i].longitude);     
         setMarkerLat(markerlat => [...markerlat]);
         setMarkerLng(markerlng => [...markerlng]);
+        if(buildingList[i].elevatorState === '운행중'){
+          iselevator.push(true);
+        }else{
+          iselevator.push(false);
+        }
       }
       setPlength(buildingList.length);
       console.log(buildingList);
@@ -182,24 +191,36 @@ function ResultSearch() {
                 zoomControl: false,
                 zoom:15
             });
+
+            
             map.addListener("click", onClick); //웹에서 지도 클릭
             map.addListener("touchstart", onTouchstart); // 모바일에서 지도 터치
-
+            map.addListener("touchend", onTouchend); // 모바일에서 지도 터치 end
+            map.addListener("drag", onDrag); // 모바일에서 지도 드래그 ing
+            
             //map.zoomIn();
             //map["zoomIn"]();
         
             return map;
         }
 
-        
         function searchmarker(){  //검색 결과 지도 마커 생성 함수
           var marker;
           var markers = [];
           var arrlat = new Array(${markerlat});
           var arrlng = new Array(${markerlng});
+          var elevator = new Array(${iselevator});
+          var icon;
           for(var i = 0; i < ${plength}; i++){
+            if(elevator[i] == true){
+              icon = "${eletrue}";
+            }else{
+              icon = "${elefalse}";
+            }
             marker = new Tmapv2.Marker({
-              position: new Tmapv2.LatLng(arrlat[i], arrlng[i]),       
+              position: new Tmapv2.LatLng(arrlat[i], arrlng[i]),   
+              icon: icon,    
+              iconSize: new Tmapv2.Size(50, 50),       
               map: locationmap,
             })
             markers.push(marker);    //마커 배열에 저장
@@ -245,10 +266,25 @@ function ResultSearch() {
         function onTouchstart(e) {
             var result = e.latLng
             var resultDiv = document.getElementById("result");
-            resultDiv.innerHTML = result;
-           
+            resultDiv.innerHTML = result;       
+        }
+
+        function onTouchend(e) {
+          var element = document.getElementById('test');
+          var element1 = document.getElementById('test1');
+          console.log(element1.innerText);
+          if(element1.innerText == 'false'){
+            element.innerHTML = 'x';     
+          }else if(element1.innerText == 'true'){
+            element1.innerHTML = 'false';
+          }   
         }
         
+        function onDrag(e) {
+          var element = document.getElementById('test1');
+          element.innerHTML = 'true';         
+        }
+
         if(!locationmap && ${lat} && ${plength}){     //지도생성, 마커생성
           var mylocation = {lat: ${lat}, lng: ${lng}};
           locationmap = initTmap(mylocation);
@@ -279,6 +315,7 @@ function ResultSearch() {
   useEffect(()=>{
     console.log('setBuildingList');
     setBuildingList(marker.state.building);
+    console.log(buildingList);
    }, []);
 
   return (
@@ -315,6 +352,8 @@ function ResultSearch() {
     </div>
 
     <div id="test" style={{position: "fixed", top: "0px", zIndex: "10", zIndex: "0"}}>
+    </div>
+    <div id="test1" style={{position: "fixed", top: "0px", zIndex: "10", zIndex: "0"}}>
     </div>
     <div className="Infobar" ref={outsideRef} style={{position: "fixed", bottom: "0px"}}>
       

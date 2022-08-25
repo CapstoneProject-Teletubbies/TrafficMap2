@@ -20,7 +20,7 @@ public class FindController {
     @RequestMapping(value="/find/address", method = {RequestMethod.POST})
 //    @GetMapping("/find/address")
     public List<FindDto> FindByAPI(String keyword, double longitude, double latitude) {
-//        String keyword = "스타벅스 부평";
+//        String keyword = "스타벅스 홍제";
 //        double longitude = 127.108212;
 //        double latitude = 37.402056;
 //        String keyword = "모다백화점";

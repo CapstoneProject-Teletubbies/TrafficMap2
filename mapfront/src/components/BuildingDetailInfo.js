@@ -17,6 +17,7 @@ const BuildingDetailInfo = (props) => {
     const [one, setOne] = useState(false);
     const [url, Seturl] = useState();
     const [line, setLine] = useState();
+    const [iselevator, setIsElevator] = useState();
 
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -78,8 +79,14 @@ const BuildingDetailInfo = (props) => {
         console.log(props);
         setBuildingDetailInfo(props.props);
         SetSubway(props.subway);
+        if(props.elevatorState === '운행중'){
+            setIsElevator(true);
+        }else{
+            setIsElevator(false);
+        }
 
         if(!one && buildingDetailInfo && subway){
+            console.log(buildingDetailInfo);
             setOne(true);
             var i= 0, j = 0;
             {subway.map((obj)=>{
@@ -108,13 +115,6 @@ const BuildingDetailInfo = (props) => {
 
     const arrivebutton=()=>{
         console.log('arrivebutton');
-    }
-
-    const styleaddress={
-        position: "fixed",
-        float: "left",
-        left: "10px",
-        margin: "12px"
     }
     const stylebutton ={
         position: "fixed",
@@ -186,7 +186,7 @@ const BuildingDetailInfo = (props) => {
                                         <div className="col-6" style={{padding: "0px"}}>
                                             <h8>{name[0]}</h8>
                                         </div>
-                                        <div className="col-6" style={{textAlign: "left", padding: "0px"}}>
+                                        <div className="col-6" style={{textAlign: "left", padding: "0px", color: "red"}}>
                                             <h8>{arv}</h8>
                                         </div>
                                     </div>
@@ -194,7 +194,7 @@ const BuildingDetailInfo = (props) => {
                                 })}
                             </div>
                             
-                            <div className="col-6" style={{top: "20px", textAlign: "left", fontSize: "0.9em", paddingLeft: "1%", paddingRight: "6%"}}>
+       {/*하행 */}          <div className="col-6" style={{top: "20px", textAlign: "left", fontSize: "0.9em", paddingLeft: "1%", paddingRight: "6%"}}>
                                 {subwayDown && subwayDown.map((obj, index)=>{
                                     var arv = '';
                                     const name =(obj.trainLineNm).split('-');
@@ -208,7 +208,7 @@ const BuildingDetailInfo = (props) => {
                                         <div className="col-6" style={{padding: "0px"}}>
                                         <h8>{name[0]}</h8>
                                         </div>
-                                        <div className="col-6" style={{textAlign: "left", padding: "0px"}}>
+                                        <div className="col-6" style={{textAlign: "left", padding: "0px", color: "red"}}>
                                             <h8>{arv}</h8>
                                         </div>
                                     </div>
@@ -227,14 +227,14 @@ const BuildingDetailInfo = (props) => {
             );
         }else{
             return(
-                <footer>
-                <div id='Info' className="detailInfo">
-                        <div id='headInfo' style={{}}>
-                            <b>{buildingDetailInfo.name}</b> {buildingDetailInfo.bizname}</div>
-                        <div id='elivator' style={styleelivator}>
-                            {buildingDetailInfo.elivator}</div>
-                        <div id='address' style={styleaddress}>
-                            <br></br>{buildingDetailInfo.fullAddressRoad}</div>
+                <footer style={{boxShadow: "1px 1px 10px 1px gray"}}>
+                <div style={{padding: "2%"}}>
+                        <div style={{width: "100%", textAlign: "-webkit-left"}}>
+                            <b>{buildingDetailInfo.name}</b> {buildingDetailInfo.upperBizName}
+                        </div>
+                        <div style={{textAlign: "-webkit-left"}}>
+                            {buildingDetailInfo.fullAddressRoad}
+                        </div>
                         <div className="" style={stylebutton}>
                             <button type="button" class="btn btn-outline-primary btn-sm col-5" style={mybutton}>출발</button>
                             <button type="button" class="btn btn-primary btn-sm col-5" style={mybutton}>도착</button>

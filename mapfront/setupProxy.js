@@ -4,7 +4,7 @@
 //     app.use(
 //         "/api",
 //         createProxyMiddleware({
-//             target: 'http://localhost:9000/',
+//             target: 'https://dev.chaerin.shop:9000/',
 //             changeOrigin: true,
 //         })
 //     );
