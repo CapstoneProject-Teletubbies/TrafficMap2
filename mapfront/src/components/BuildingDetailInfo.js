@@ -2,7 +2,7 @@ import React from 'react';
 import axios from "axios";
 import '../css/BuildingDetailInfo.css'
 import Modal from './Modal';
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import {useState, useEffect} from 'react';
 import Button from 'react-bootstrap/Button';
 
@@ -21,6 +21,8 @@ const BuildingDetailInfo = (props) => {
 
     const [modalOpen, setModalOpen] = useState(false);
 
+    const navigate = useNavigate();
+
     const openMadal = () => {
         handlesubwaymapbutton();
         setTimeout(setModalOpen(true), 50);
@@ -31,11 +33,51 @@ const BuildingDetailInfo = (props) => {
 
     const handlestartButton = () => {
         console.log("출발 버튼 클릭");
+        navigate('/find-way', {
+            state:{
+                startBuilding: props.whole.props,
+                mylocation: props.whole.props.mylocation,
+                id: 'start',
+            }
+        })
     }
     const handleendButton = () => {
         console.log("도착 버튼 클릭");
+        navigate('/find-way', {
+            state:{
+                endBuilding: props.whole.props,
+                mylocation: props.whole.props.mylocation,
+                id: 'end',
+            }
+        })
     }
 
+    const handlecheckButton = () => {
+        var start = null, end = null;
+        if(props.findway === 'start' && props.whole.endBuilding){
+            start = props.whole.props;
+            end = props.whole.endBuilding;
+        }else if(props.findway === 'end' && props.whole.startBuilding){
+            start = props.whole.startBuilding;
+            end = props.whole.props;
+        }else if(props.findway === 'start'){
+            console.log("c출발");
+            start = props.whole.props;     
+        }else if(props.findway === 'end'){
+            console.log("도ㅗ착");
+            end = props.whole.props;
+        }
+        console.log(props);
+        navigate('/find-way', {
+            state: {
+                props: props.whole.props,
+                mylocation: props.mylocation,
+                id: props.findway,
+                startBuilding: start,
+                endBuilding: end,
+            }
+        })
+    }
     const handlesubwaymapbutton = () => {
         const subwayname = (props.props.name.split('역'))[0];
         const subwaymap = axios.create({                                    //인천지하철 1, 2호선 내부지도
@@ -108,14 +150,6 @@ const BuildingDetailInfo = (props) => {
        
     }
 
-    const startbutton =()=>{
-        
-        console.log('startbutton');
-    }
-
-    const arrivebutton=()=>{
-        console.log('arrivebutton');
-    }
     const stylebutton ={
         position: "fixed",
         width: "170px",
@@ -227,18 +261,25 @@ const BuildingDetailInfo = (props) => {
             );
         }else{
             return(
-                <footer style={{boxShadow: "1px 1px 10px 1px gray"}}>
-                <div style={{padding: "2%"}}>
+                <footer style={{boxShadow: "1px 1px 10px 1px gray", }}>
+                <div style={{padding: "2%", height: "100%"}}>
                         <div style={{width: "100%", textAlign: "-webkit-left"}}>
                             <b>{buildingDetailInfo.name}</b> {buildingDetailInfo.upperBizName}
                         </div>
                         <div style={{textAlign: "-webkit-left"}}>
                             {buildingDetailInfo.fullAddressRoad}
                         </div>
-                        <div className="" style={stylebutton}>
+                        {!props.findway &&
+                        <div className="" style={stylebutton}>                          
                             <button type="button" class="btn btn-outline-primary btn-sm col-5" onClick={handlestartButton} style={mybutton}>출발</button>
                             <button type="button" class="btn btn-primary btn-sm col-5" onClick={handleendButton} style={mybutton}>도착</button>
                         </div>
+                        }
+                        {props.findway && 
+                        <div id="checkbutton" style={{position: "relative", width: "100%", }}>
+                            <button style={{width: "100%", backgroundColor: "white", borderRadius: "5px"}} onClick={handlecheckButton}>확인</button>
+                        </div>
+                        }
                 </div>
                 </footer>
             );
