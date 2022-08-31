@@ -3,8 +3,14 @@ import axios from 'axios';
 import $ from 'jquery';
 import { useLocation } from 'react-router';
 import proj4 from 'proj4';
+import '../css/FindWay.css'
 
+import UrlModal from '../components/UrlModal';
 import SearchBar from '../components/SearchBar';
+
+import walk from "../images/walkp.png";
+import bus from "../images/bus.png";
+
 
 const baseurl = 'https://dev.chaerin.shop:9000/'         //베이스 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -14,6 +20,7 @@ function FindWay(props){
     const [startplaceholder, setStartPlaceHolder] = useState('출발지 입력');
     const [endplaceholder, setEndPlaceHolder] = useState('도착지 입력');
 
+    const [present, setPresent] = useState();
     const [startPlace, setStartPlace] = useState();
     const [endPlace, setEndPlace] = useState();
     const [both, setBoth] = useState(false);
@@ -30,11 +37,35 @@ function FindWay(props){
 
     const handleSuccess = (pos) => {                //현재 내 위치 받아오기
         const {latitude, longitude } = pos.coords;
-        
+
         setFindLocation({
           latitude, longitude
         })
     };
+
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const openMadal = () => {
+        setTimeout(setModalOpen(true), 50);
+    }
+    const closeModal = () => {
+        setModalOpen(false);
+    }
+    const urlModal = () => {
+        var start, end;
+        if((startPlace.name).includes('역') && startPlace.obj.upperBizName === '교통편의'){
+            start = (startPlace.name).split('역')[0] + '역';
+        }else{
+            start = startPlace.name;
+        }
+        if((endPlace.name).includes('역') && endPlace.obj.upperBizName === '교통편의'){
+            end = (endPlace.name).split('역')[0] + '역';
+        }else{
+            end = endPlace.name;
+        }
+        TmapfindTrans(start, end);
+        closeModal();
+    }
 
     const TmapfindWay = (startlng, startlat, endlng, endlat) => {
         const fw = axios.create({
@@ -50,13 +81,31 @@ function FindWay(props){
         })
     };
 
+    const TmapfindTrans = (startname, endname) => {
+        const tft = axios.create({
+            baseURL: baseurl
+        })
+        tft.post('/api/way/trans', null, {params: {
+            sName: startname, eName: endname
+        }}).then(function(res){
+            console.log(res.data);
+            window.open(res.data, '_blank');
+        }).catch(function(err){
+            window.open('https://map.kakao.com/', '_blank');
+            console.log("대중교통 길찾기 실패");
+        })
+    }
+
     useEffect(()=>{
-        if(route){
-            route.map((obj)=>{
-                console.log(obj.isStair);
-            })
+        console.log("////////////////////////////////////////");
+        if(location.state.mystartlocation){
+            console.log(location.state.mystartlocation);
+            setStartPlaceHolder(location.state.mystartlocation);
+            setStartPlace({name: location.state.mystartlocation, obj: {latitude: location.state.mylocation.latitude, longitude: location.state.mylocation.longitude}})
+        }else{
+            console.log("없어");
         }
-    })
+    }, [])
 
     useEffect(()=>{
         console.log(location.state);
@@ -116,6 +165,11 @@ function FindWay(props){
         console.log("클릭");
         window.location.href = "/";
         // TmapfindWay();
+        // TmapfindTrans();
+    }
+
+    const handleTransButton = () => {
+        openMadal();
     }
 
     useEffect(()=>{
@@ -126,6 +180,7 @@ function FindWay(props){
         const besseltm = "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43"
         const wgs84 = "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees" 
 
+        
 
         if(both){
             if(startPlace.address === '버스정류장'){
@@ -354,8 +409,8 @@ function FindWay(props){
                 </div>
                 {both && 
                 <div style={{width: "100%", padding: "0px"}}>
-                    <button style={{width: "50%", backgroundColor: "white", border: "none", boxShadow: "1px 1px 1px 1px gray"}}>도보</button>
-                    <button style={{width: "50%", backgroundColor: "white", border: "none", boxShadow: "1px 1px 1px 1px gray"}}>대중교통</button>
+                    <button id="walkbtn"><img src={walk} style={{width: "16px", height: "24px", marginRight: "8px", marginBottom: "2px"}}></img>도보</button>
+                    <button id="walkbtn" onClick={handleTransButton}><img src={bus} style={{width: "24px", height: "24px", marginRight: "8px", marginBottom: "2px"}}></img>대중교통</button>
                 </div>
                 }
             </div>
@@ -368,6 +423,9 @@ function FindWay(props){
               }}>
                 
             </div></body>}
+            <UrlModal open={modalOpen} close={closeModal} connect={urlModal}>
+                       
+            </UrlModal>
         </div>     
     );
 }
