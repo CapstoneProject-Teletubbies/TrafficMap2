@@ -169,6 +169,7 @@ public class FindServiceImpl implements FindService {
                 .block();
         long end2 = System.currentTimeMillis();
         System.out.println("용의자 시간 : "+(end2-start2)/1000.0);
+
         if (result.getBody() != null) {
             //받아온 JSON 데이터 가공
             //json parser
@@ -185,7 +186,9 @@ public class FindServiceImpl implements FindService {
 
             List<ElevatorOrderDto> ele = new ArrayList<>();
 
+
             for(int i = 0 ; i<poiArr.size();i++){
+
                 ElevatorOrderDto elevatorOrderDto = new ElevatorOrderDto();
                 FindDto findDto = new FindDto();
                 object = (JSONObject) poiArr.get(i);
@@ -212,8 +215,6 @@ public class FindServiceImpl implements FindService {
             long end1 = System.currentTimeMillis();
             System.out.println("엘레베이터만 걸리는 시간 : "+(end1-start1)/1000.0);
 
-
-
             //다시 poi의 value를 받아온 배열을 개수만큼 담기 (검색했을 때 출력하는 리스트 최대 10개)
             for (int i = 0; i < poiArr.size(); i++) {
 
@@ -223,42 +224,60 @@ public class FindServiceImpl implements FindService {
                 //이제 newAddress 안의 경도, 위도, 도로명 주소 쓰기 위해 또 파싱
                 JSONObject newAddressList = (JSONObject) object.get("newAddressList");
                 JSONArray newAddress = (JSONArray) newAddressList.get("newAddress");
-                JSONObject object1 = (JSONObject) newAddress.get(0);
 
-                //이제 필요한 애들 받아오기
-                String fullAddressRoad = (String) object1.get("fullAddressRoad"); //도로명 주소
-                String centerLat = (String) object1.get("centerLat"); //위도
-                String centerLon = (String) object1.get("centerLon"); //경도
-                String name = (String) object.get("name"); // 이름
-                String bizName = (String) object.get("bizName"); // 업종명
-                String upperBizName = (String) object.get("upperBizName"); //업종명 대분류
-                String middleAddrName = (String) object.get("middleAddrName"); // 도로명주소 ㅇㅇ로
-                String roadName = (String) object.get("roadName"); // 도로명주소 ㅇㅇ로
-                String firstBuildNo = (String) object.get("firstBuildNo"); //건물번호1
+                if(newAddress.size() != 0) {
+                    JSONObject object1 = (JSONObject) newAddress.get(0);
 
-                //일단 테스트로 이제 가공한 데이터를 findDto에 저장
-                findDto.setName(name);
-                findDto.setFullAddressRoad(fullAddressRoad);
-                findDto.setLatitude(Double.parseDouble(centerLat));
-                findDto.setLongitude(Double.parseDouble(centerLon));
-                findDto.setBizName(bizName);
-                findDto.setUpperBizName(upperBizName);
-                findDto.setMiddleAddrName(middleAddrName);
-                findDto.setRoadName(roadName);
-                findDto.setFirstBuildNo(firstBuildNo);
+                    //이제 필요한 애들 받아오기
+                    String fullAddressRoad = (String) object1.get("fullAddressRoad"); //도로명 주소
+                    String centerLat = (String) object1.get("centerLat"); //위도
+                    String centerLon = (String) object1.get("centerLon"); //경도
+                    String name = (String) object.get("name"); // 이름
+                    String bizName = (String) object.get("bizName"); // 업종명
+                    String upperBizName = (String) object.get("upperBizName"); //업종명 대분류
+                    String middleAddrName = (String) object.get("middleAddrName"); // 도로명주소 ㅇㅇ로
+                    String roadName = (String) object.get("roadName"); // 도로명주소 ㅇㅇ로
+                    String firstBuildNo = (String) object.get("firstBuildNo"); //건물번호1
+
+                    findDto.setName(name);
+                    findDto.setFullAddressRoad(fullAddressRoad);
+                    findDto.setLatitude(Double.parseDouble(centerLat));
+                    findDto.setLongitude(Double.parseDouble(centerLon));
+                    findDto.setBizName(bizName);
+                    findDto.setUpperBizName(upperBizName);
+                    findDto.setMiddleAddrName(middleAddrName);
+                    findDto.setRoadName(roadName);
+                    findDto.setFirstBuildNo(firstBuildNo);
 
 //                String addr = middleAddrName + " " + roadName + " " + firstBuildNo;
 
-                findDto.setElevatorState(elevatorResult.get(i));
+                    findDto.setElevatorState(elevatorResult.get(i));
 
-                dtos.add(i, findDto);
+                    dtos.add(i, findDto);
+                }
+                else { //건물이 아니라 도로 같은거라서 [] 안에 비어있을 경우
+                    String name = (String) object.get("name"); // 이름
+                    String upperBizName = (String) object.get("upperBizName"); //업종명 대분류
+                    String frontLat = (String) object.get("frontLat"); //위도
+                    String frontLon = (String) object.get("frontLon"); //경도
+
+                    findDto.setName(name);
+                    findDto.setUpperBizName(upperBizName);
+                    findDto.setLatitude(Double.parseDouble(frontLat));
+                    findDto.setLongitude(Double.parseDouble(frontLon));
+
+                    dtos.add(i, findDto);
+                }
 
             }
 
             long end0 = System.currentTimeMillis();
             System.out.println("총 시간 : " + (end0 - start0) / 1000.0);
+            System.out.println("dtos = " + dtos);
             return dtos;
-        } else {
+
+        }
+        else {
             return null;
         }
     }
@@ -365,50 +384,50 @@ public class FindServiceImpl implements FindService {
 
     }
 
-/*
-    @SneakyThrows
-    public List<String> findElevatorByAPI(List<ElevatorOrderDto> ele) {
-        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(elevator_url);
-        factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
+    /*
+        @SneakyThrows
+        public List<String> findElevatorByAPI(List<ElevatorOrderDto> ele) {
+            DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(elevator_url);
+            factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
 
-        WebClient wc = WebClient.builder().uriBuilderFactory(factory).baseUrl(elevator_url).build();
+            WebClient wc = WebClient.builder().uriBuilderFactory(factory).baseUrl(elevator_url).build();
 
-        String encodedName = URLEncoder.encode(address, "UTF-8");
+            String encodedName = URLEncoder.encode(address, "UTF-8");
 
-        long start = System.currentTimeMillis();
+            long start = System.currentTimeMillis();
 
-        ResponseEntity<String> result = wc.get()
-                .uri(uriBuilder -> uriBuilder.path("/getOperationInfoList")
-                        .queryParam("serviceKey", elevator_apikey)
-                        .queryParam("buld_address", encodedName) //주소
-                        .queryParam("numOfRows", 1) // 1개만 출력
-                        .queryParam("pageNo", 1).build())
-                .retrieve() //response 불러옴
-                .toEntity(String.class)
-//                .bodyToMono(String.class);
-                .block();
+            ResponseEntity<String> result = wc.get()
+                    .uri(uriBuilder -> uriBuilder.path("/getOperationInfoList")
+                            .queryParam("serviceKey", elevator_apikey)
+                            .queryParam("buld_address", encodedName) //주소
+                            .queryParam("numOfRows", 1) // 1개만 출력
+                            .queryParam("pageNo", 1).build())
+                    .retrieve() //response 불러옴
+                    .toEntity(String.class)
+    //                .bodyToMono(String.class);
+                    .block();
 
-        long end = System.currentTimeMillis();
-        System.out.println(address + " 엘레베이터 호출 하나 생성에 걸리는 시간 : " + (end - start) / 1000.0);
+            long end = System.currentTimeMillis();
+            System.out.println(address + " 엘레베이터 호출 하나 생성에 걸리는 시간 : " + (end - start) / 1000.0);
 
-        org.json.JSONObject object = XML.toJSONObject(result.getBody());
-        org.json.JSONObject response = (org.json.JSONObject) object.get("response");
-        org.json.JSONObject body = (org.json.JSONObject) response.get("body");
+            org.json.JSONObject object = XML.toJSONObject(result.getBody());
+            org.json.JSONObject response = (org.json.JSONObject) object.get("response");
+            org.json.JSONObject body = (org.json.JSONObject) response.get("body");
 
-        if (body.get("items").equals("")) { // 엘리베이터가 없으면 body":{"items":"","numOfRows":,"pageNo":,"totalCount":} 이런식으로 반환
-            String elvtrSttsNm = "x";
-            return elvtrSttsNm;
-        } else {
-            org.json.JSONObject items = (org.json.JSONObject) body.get("items");
-            //item value들
-            org.json.JSONObject item = (org.json.JSONObject) items.get("item");
-            //필요한 엘리베이터 정보 받아오기
-            String elvtrSttsNm = (String) item.get("elvtrSttsNm");
-            return elvtrSttsNm;
+            if (body.get("items").equals("")) { // 엘리베이터가 없으면 body":{"items":"","numOfRows":,"pageNo":,"totalCount":} 이런식으로 반환
+                String elvtrSttsNm = "x";
+                return elvtrSttsNm;
+            } else {
+                org.json.JSONObject items = (org.json.JSONObject) body.get("items");
+                //item value들
+                org.json.JSONObject item = (org.json.JSONObject) items.get("item");
+                //필요한 엘리베이터 정보 받아오기
+                String elvtrSttsNm = (String) item.get("elvtrSttsNm");
+                return elvtrSttsNm;
+            }
         }
-    }
 
-*/
+    */
     //계단 api
     @SneakyThrows
     public List<StairDto> findStairs() {

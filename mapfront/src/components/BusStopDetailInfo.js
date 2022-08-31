@@ -9,7 +9,7 @@ import axios from 'axios';
 import BusInfo from '../components/BusInfo'
 import { TabContent } from 'react-bootstrap';
 
-const baseurl = 'https://dev.chaerin.shop:9000/'
+const baseurl = 'http://localhost:9000/'
 
 const BusStopDetailInfo = (props)=>{
     const [startXY, setStartXY] = useState();

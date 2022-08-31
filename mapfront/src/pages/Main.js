@@ -15,7 +15,7 @@ import nav from "../images/nav.png";
 
 import mylocation from "../images/mylocation.png";
 
-const baseurl = 'https://dev.chaerin.shop:9000/'         //베이스 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+const baseurl = 'http://localhost:9000/'         //베이스 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 function Main() {
     const [keyword, setKeyword] = useState();  //검색 받은 키워드

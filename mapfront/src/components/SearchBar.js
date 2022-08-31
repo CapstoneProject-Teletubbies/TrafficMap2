@@ -6,7 +6,7 @@ import '../css/input.css'
 import Search from '../pages/Search'
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
-const baseurl = 'https://dev.chaerin.shop:9000/'         //베이스 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+const baseurl = 'http://localhost:9000/'         //베이스 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 const SearchBar = (props) => {

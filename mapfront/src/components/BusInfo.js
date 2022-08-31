@@ -3,7 +3,7 @@ import '../css/BuildingInfo.css'
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const baseurl = 'https://dev.chaerin.shop:9000/'
+const baseurl = 'http://localhost:9000/'
 
 
 const BuildingInfo = (props) => {
