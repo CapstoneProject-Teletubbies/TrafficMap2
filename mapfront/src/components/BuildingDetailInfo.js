@@ -6,7 +6,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import {useState, useEffect} from 'react';
 import Button from 'react-bootstrap/Button';
 
-const baseurl = 'http://localhost:9000/'         //베이스 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+const baseurl = 'https://dev.chaerin.shop:9000/'         //베이스 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 const BuildingDetailInfo = (props) => {

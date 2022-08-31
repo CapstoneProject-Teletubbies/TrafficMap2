@@ -13,7 +13,7 @@ import walk from "../images/walkp.png";
 import bus from "../images/bus.png";
 
 
-const baseurl = 'http://localhost:9000/'         //베이스 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+const baseurl = 'https://dev.chaerin.shop:9000/'         //베이스 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 function FindWay(props){

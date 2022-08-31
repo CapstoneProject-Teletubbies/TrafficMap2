@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from 'react';
 
-const baseurl = 'http://localhost:9000/'
+const baseurl = 'https://dev.chaerin.shop:9000/'
 
 
 const BusStopInfo = (props) => {
