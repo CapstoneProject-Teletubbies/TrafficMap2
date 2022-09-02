@@ -45,8 +45,9 @@ function Main() {
       reverseGeocoding(location.latitude, location.longitude); 
     }
 
-    const handleSuccess = (pos) => {
+    const handleSuccess = (pos) => {    //내 위치 찾기
       const {latitude, longitude } = pos.coords;
+      console.log(latitude, longitude)
 
       setLocation({
         latitude, longitude
@@ -106,13 +107,19 @@ function Main() {
       let vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty("--vh", `${vh}px`);
   }
+
+  useEffect(()=>{
+    navigator.geolocation.watchPosition(handleSuccess);
+    // setInterval(()=>{ 
+    // }, 3000);
+    // navigator.geolocation.watchPosition(handleSuccess);
+  })
      
   useEffect(() => {
     var zoomin;
     var zoomout;
     var movelocation;
     setScreenSize();
-    navigator.geolocation.watchPosition(handleSuccess);
     if(location){
       var lat = location.latitude;
       var lng = location.longitude;
@@ -145,6 +152,8 @@ function Main() {
     script.innerHTML = ` 
         var testmap;
         var zoomIn;
+        var marker;
+        var markers=[];
         function initTmap(pos) {
             var map = new Tmapv2.Map("TMapApp", {
                 center: new Tmapv2.LatLng(pos.lat, pos.lng),
@@ -167,8 +176,10 @@ function Main() {
           var marker = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(${lat}, ${lng}),
             icon: "${mylocation}",
+            iconSize: new Tmapv2.Size(40, 40),       
             map: testmap
           })
+          markers.push(marker);
         }
 
         function onClick(e) {
@@ -186,11 +197,19 @@ function Main() {
         
         if(!testmap && ${lat}){
           var mylocation = {lat: ${lat}, lng: ${lng}};
-          testmap = initTmap(mylocation);
-          createmarker();  
+          testmap = initTmap(mylocation); 
         }
         else{
           console.log("Init false");
+        }
+        removeMarkers();  //마커 제거
+        createmarker();   //마커 생성
+
+        function removeMarkers() {
+          for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);
+          }
+          markers = [];
         }
 
         if(testmap && ${zoomin}){
