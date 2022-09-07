@@ -260,7 +260,7 @@ function Main() {
       if(testmap && !markers){
       $.ajax({                //계단 받아옴
         method: "POST",
-        url: "http://localhost:9000/api/find/stair",
+        url: "https://dev.chaerin.shop:9000/api/find/stair",
         async: false,
         data: {
 
