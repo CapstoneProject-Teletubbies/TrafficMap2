@@ -4,14 +4,15 @@ import { useNavigate } from "react-router-dom";
 
 import '../css/Main.css';
 import SearchBar from "../components/SearchBar";
+import SideBar from "../components/ElevatorAndStair";
 import Button from "../components/Button";
-import SideBar from "../components/SideBar";
-import ReactDOM from "react-dom";
 import getLocation from '../getLocation';
 import plus from "../images/plus.png";
 import minus from "../images/minus.png";
 import target from "../images/location.png";
 import nav from "../images/nav.png";
+import stairs from "../images/stairs.png";
+
 
 import mylocation from "../images/mylocation.png";
 
@@ -25,6 +26,26 @@ function Main() {
  
     const [location, setLocation] = useState();
     const [error, setError] = useState();
+    const locationWatchId = useRef(null);
+
+    const [checkedList, setCheckedList] = useState([]);
+
+    const onCheckedElement = (checked, item) => {
+      if(checked){
+        setCheckedList([...checkedList, item]);
+      }else if(!checked){
+        setCheckedList(checkedList.filter(el => el !== item));
+      }
+    };
+
+    const onRemove = item => {
+      setCheckedList(checkedList.filter(el => el !== item));
+    };
+
+    const LIST = [
+      {id: 0, data: '엘리베이터'},
+      {id: 1, data: '계단'},
+    ];
 
     const navigate = useNavigate();
 
@@ -53,6 +74,9 @@ function Main() {
         latitude, longitude
       })
     };
+    const handleError = (error) => {
+      setError(error.message);
+    };
 
     const reverseGeocoding = (lat, lon) => {
       const rG = axios.create({
@@ -71,6 +95,20 @@ function Main() {
           console.log("지오코딩 실패");
       })
   }
+    const getStair = () => {    //전체 계단 받아옴
+      const getstair = axios.create({
+        baseURL: baseurl
+      })
+      getstair.post('/api/find/stair')
+      .then(function(res){
+        console.log(res);
+      }).catch(function(err){
+        console.log("계단 정보 못받아옴");
+      })
+    }
+    const getElevator = () => { //전체 엘리베이터 받아옴
+
+    }
 
     // const handleError= (error) -> {
     //   setError(error.message);
@@ -109,20 +147,13 @@ function Main() {
   }
 
   useEffect(()=>{
-    navigator.geolocation.watchPosition((pos)=>{
-      const {latitude, longitude } = pos.coords;
-      console.log(latitude, longitude);
-
-      setLocation({
-        latitude, longitude
-      })
-    });
-    setInterval(()=>{
-      // navigator.geolocation.watchPosition(handleSuccess);
-      console.log("3초에 한번~");
-    }, 3000);
+    navigator.geolocation.watchPosition(handleSuccess);
+    // setInterval(()=>{
+    //   navigator.geolocation.watchPosition(handleSuccess);
+    //   console.log("3초에 한번~");
+    // }, 3000);
     // navigator.geolocation.watchPosition(handleSuccess);
-  },[])
+  }, [])
      
   useEffect(() => {
     var zoomin;
@@ -162,7 +193,7 @@ function Main() {
         var testmap;
         var zoomIn;
         var marker;
-        var markers=[];
+
         function initTmap(pos) {
             var map = new Tmapv2.Map("TMapApp", {
                 center: new Tmapv2.LatLng(pos.lat, pos.lng),
@@ -181,56 +212,97 @@ function Main() {
             return map;
       }
 
-        function createmarker(){
-          var marker = new Tmapv2.Marker({
-            position: new Tmapv2.LatLng(${lat}, ${lng}),
-            icon: "${mylocation}",
-            iconSize: new Tmapv2.Size(40, 40),       
-            map: testmap
-          })
-          markers.push(marker);
-        }
 
-        function onClick(e) {
-            var result_mouse = e.latLng
-            var resultDiv = document.getElementById("result_mouse");
-            resultDiv.innerHTML = result_mouse;
-            console.log(result_mouse._lat);     
-        }
+      function onClick(e) {
+          var result_mouse = e.latLng
+          var resultDiv = document.getElementById("result_mouse");
+          resultDiv.innerHTML = result_mouse;
+          console.log(result_mouse._lat);     
+      }
 
-        function onTouchstart(e) {
-            var result = e.latLng
-            var resultDiv = document.getElementById("result");
-            resultDiv.innerHTML = result;
-        }
+      function onTouchstart(e) {
+          var result = e.latLng
+          var resultDiv = document.getElementById("result");
+          resultDiv.innerHTML = result;
+      }
         
-        if(!testmap && ${lat}){
-          var mylocation = {lat: ${lat}, lng: ${lng}};
-          testmap = initTmap(mylocation); 
-        }
-        else{
-          console.log("Init false");
-        }
-        removeMarkers();  //마커 제거
-        createmarker();   //마커 생성
+      if(!testmap && ${lat}){
+        var mylocation = {lat: ${lat}, lng: ${lng}};
+        testmap = initTmap(mylocation); 
+      }
+      else{
+        console.log("Init false");
+      }
+      
+      if(marker){                       //마커 있으면 지우기
+        marker.setMap(null);
+      }
 
-        function removeMarkers() {
-          for (var i = 0; i < markers.length; i++) {
-            markers[i].setMap(null);
+      var marker = new Tmapv2.Marker({  //마커 생성
+        position: new Tmapv2.LatLng(${lat}, ${lng}),
+        icon: "${mylocation}",
+        iconSize: new Tmapv2.Size(40, 40),       
+        map: testmap
+      })
+      
+      if(testmap && ${zoomin}){
+        testmap.zoomIn();
+      }
+      if(testmap && ${zoomout}){
+        testmap.zoomOut();
+      }
+      if(testmap && ${movelocation}){
+        var setmylocation = new Tmapv2.LatLng(${lat}, ${lng});
+        testmap.setCenter(setmylocation);
+      }
+
+      var markers;
+      if(testmap && !markers){
+      $.ajax({                //계단 받아옴
+        method: "POST",
+        url: "http://localhost:9000/api/find/stair",
+        async: false,
+        data: {
+
+        },
+        success: function(res){
+          console.log(res);
+          if(markers){
+            console.log("마커 지워야해");
+            console.log(markers);
+            for(var i = 0; i < markers.length; i++){
+              markers[i].setMap(null);
+            }
+            markers = [];
           }
           markers = [];
-        }
+          
+          for(var i = 0; i < res.length; i++){
+            console.log("마커생성");
+            var lat = res[i].startlatitude;
+            var lng = res[i].startlongitude;
 
-        if(testmap && ${zoomin}){
-          testmap.zoomIn();
+            var markerone = new Tmapv2.Marker({
+              position: new Tmapv2.LatLng(lat, lng),
+              icon: "${stairs}",
+              iconSize: new Tmapv2.Size(15, 15),
+              map: testmap
+            });
+            
+            markers.push(markerone);
+          }
+        },
+        error: function(err){
+          console.log("계단 못받아옴");
         }
-        if(testmap && ${zoomout}){
-          testmap.zoomOut();
-        }
-        if(testmap && ${movelocation}){
-          var setmylocation = new Tmapv2.LatLng(${lat}, ${lng});
-          testmap.setCenter(setmylocation);
-        }
+      })
+    }else{
+      console.log(markers);
+      
+      console.log(marker);
+      console.log(marker.getOffset());
+
+    }
    `;
     script.type = "text/javascript";
     script.async = "async";
@@ -265,7 +337,9 @@ function Main() {
       </div>
 
     </div>
-
+    
+    <SideBar onCheck={onCheckedElement}>{LIST}</SideBar>
+    
     <div className="rightbarbutton">
       <div className="zoom">
         <Button onClick={handlePlusButton} src={plus}/>

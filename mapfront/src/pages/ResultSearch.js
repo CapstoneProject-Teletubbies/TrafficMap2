@@ -32,11 +32,14 @@ function ResultSearch() {
     const [iselevator, setIsElevator] = useState([]);
     const [markerlist, setMarkerList] = useState([]);
     const [choosemarker, setChooseMarker] = useState();
-
+    const [middleLat, setMiddleLat] = useState();
+    const [middleLng, setMiddleLng] = useState();
+ 
     const outsideRef = useRef(null);
     useOutsideClick(outsideRef);
 
     const [buildingList, setBuildingList] = useState([]);
+    const [sid, setSid] = useState();
     const marker = useLocation();
     // console.log(marker.state.keyword);  //test
  
@@ -74,8 +77,13 @@ function ResultSearch() {
         if(element.innerText){
           var markerindex = parseInt(element.innerText);
           console.log(markerindex);
-          setChooseMarker(markerindex);
-          if(buildingList){
+          if(markerindex == 0){
+            console.log("0인데요!");
+            setChooseMarker(0);
+          }else{
+            setChooseMarker(markerindex);
+          }    
+          if(buildingList[0]){
             console.log(buildingList);
           }
         }
@@ -132,11 +140,14 @@ function ResultSearch() {
     var zoomout;
     var movelocation;
     var test;
+    var middlelat = 0, middlelng = 0;
 
-    if(buildingList[0] && !plength){
+    if(buildingList[3] && !plength){
       for(var i = 0; i < buildingList.length; i++){
         markerlat.push(buildingList[i].latitude);
-        markerlng.push(buildingList[i].longitude);     
+        markerlng.push(buildingList[i].longitude);  
+        middlelat = middlelat + buildingList[i].latitude;
+        middlelng = middlelng + buildingList[i].longitude;   
         setMarkerLat(markerlat => [...markerlat]);
         setMarkerLng(markerlng => [...markerlng]);
         if(buildingList[i].elevatorState === '운행중'){
@@ -145,7 +156,13 @@ function ResultSearch() {
           iselevator.push(false);
         }
       }
+      middlelat = middlelat / buildingList.length;
+      middlelng = middlelng / buildingList.length;
+      setMiddleLat(middlelat);
+      setMiddleLng(middlelng);
       setPlength(buildingList.length);
+
+      console.log(middlelat, middlelng);
       console.log(buildingList);
     }
 
@@ -184,12 +201,12 @@ function ResultSearch() {
         
         function initTmap(pos) {
             var map = new Tmapv2.Map("TMapApp", {
-                center: new Tmapv2.LatLng(pos.lat, pos.lng),
+                center: new Tmapv2.LatLng(${middleLat}, ${middleLng}),
                 width: "100%",
                 height: "100%",
                 httpsMode: true,
                 zoomControl: false,
-                zoom:15
+                zoom:13
             });
 
             
@@ -312,9 +329,14 @@ function ResultSearch() {
     document.head.appendChild(script);
   }, [handleSuccess]);
 
-  useEffect(()=>{
+  useEffect(()=>{ //~방향인 애들 없애기
     console.log('setBuildingList');
-    setBuildingList(marker.state.building);
+    var tmp = (marker.state.building).filter(function(data){
+      return !data.name.includes('방향');
+    });
+    console.log(tmp);
+    setBuildingList(tmp);
+    
     console.log(buildingList);
    }, []);
 
@@ -357,7 +379,7 @@ function ResultSearch() {
     </div>
     <div className="Infobar" ref={outsideRef} style={{position: "fixed", bottom: "0px"}}>
       
-      {choosemarker && <BuildingDetailInfo props={buildingList[choosemarker]} subway={null}/>}
+      {choosemarker && <BuildingDetailInfo props={buildingList[choosemarker]} findway={null} whole={{props: {mylocation: location, name: buildingList[choosemarker].name, obj: buildingList[choosemarker]}}} subway={null} mylocation={location}/>}
       {/* <BuildingDetailInfo props={building.state}/> */}
     </div>
     </main>
