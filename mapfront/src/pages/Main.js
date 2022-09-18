@@ -8,8 +8,11 @@ import SideBar from "../components/ElevatorAndStair";
 import Button from "../components/Button";
 import getLocation from '../getLocation';
 import plus from "../images/plus.png";
+import plussign from "../images/plussign.png";
 import minus from "../images/minus.png";
+import minussign from "../images/minussign.png"
 import target from "../images/location.png";
+import mytarget from "../images/target.png"
 import nav from "../images/nav.png";
 import stairs from "../images/stairs.png";
 import elevator from "../images/elevator.png";
@@ -338,7 +341,7 @@ function Main() {
     </div>
 
     <div className="search">
-        <SearchBar onChange={handleKeyword} placeholder={'장소, 버스, 지하철, 주소 검색'} location={location} src={'/search'}/>
+        <SearchBar onChange={handleKeyword} placeholder={'장소, 버스, 지하철, 주소 검색'} location={location} src={'/search'} style={{boxShadow: "1px 1px 20px 1px #D5D5D5"}}/>
         <Button onClick={handleNavButton} src={nav}></Button>
     </div>
     <div id="test">
@@ -348,7 +351,8 @@ function Main() {
 
     <div className="left">
       <div className="mylocation">
-        <Button onClick={handleLocationButton} src={target}/>
+        {/* <Button onClick={handleLocationButton} src={target}/> */}
+        <button onClick={handleLocationButton} style={{backgroundColor: "white", borderRadius: "7px", height: "45px"}}><img src={mytarget} style={{width: "120%", height: "87%", left: "-2px"}}></img></button>
       </div>
 
     </div>
@@ -357,8 +361,10 @@ function Main() {
     
     <div className="rightbarbutton">
       <div className="zoom">
-        <Button onClick={handlePlusButton} src={plus}/>
-        <Button onClick={handleMinusButton} src={minus}/>
+        {/* <Button onClick={handlePlusButton} src={plus}/> */}
+        {/* <Button onClick={handleMinusButton} src={minus}/> */}
+        <button onClick={handlePlusButton} style={{backgroundColor: "white", borderRadius: "7px", width: "42px", right: "-1px"}}><img src={plussign} style={{width: "100%", height: "80%"}}></img></button>
+        <button onClick={handleMinusButton} style={{backgroundColor: "white", borderRadius: "7px", marginTop: "4px", width: "42px", right: "-1px"}}><img src={minussign} style={{width: "100%", height: "80%"}}></img></button>
         {/* <SideBar /> */}
       </div>
     </div>

@@ -44,7 +44,7 @@ class MapApplicationTests {
 	void contextLoads() {
 	}
 
-	@Test
+//	@Test
 	void apiTest() throws UnsupportedEncodingException {
 
 		//http://openapi.elevator.go.kr/openapi/service/ElevatorOperationService
@@ -519,6 +519,16 @@ class MapApplicationTests {
 		System.out.println("출력 되나");
 		System.out.println(map.get("1호선 부평"));
 
+
+	}
+
+	@Test
+	void gwalho(){
+		String str = "종로3가(어쩌구)";
+
+		String str2=str.replaceAll("\\(.*?\\)","");
+
+		System.out.println(str2);
 
 	}
 
