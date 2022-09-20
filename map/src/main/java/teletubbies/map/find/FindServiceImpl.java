@@ -23,6 +23,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class FindServiceImpl implements FindService {
@@ -178,7 +180,7 @@ public class FindServiceImpl implements FindService {
 
             long end0 = System.currentTimeMillis();
             System.out.println("총 시간 : " + (end0 - start0) / 1000.0);
-            System.out.println("dtos = " + dtos);
+//            System.out.println("dtos = " + dtos);
             return dtos;
 
         }
@@ -209,6 +211,10 @@ public class FindServiceImpl implements FindService {
 
             org.json.JSONObject object = XML.toJSONObject(responseResult.get(i));
             org.json.JSONObject response = (org.json.JSONObject) object.get("response");
+            if(response == null) { //호출 실패하면(아마 null일듯)
+                findElevatorByAPI(ele); // 함수 다시 불러
+//                return null;
+            }
             org.json.JSONObject body = (org.json.JSONObject) response.get("body");
             //System.out.println(body);
             if (!(body.get("items").equals(""))) { // 엘리베이터가 없으면 body":{"items":"","numOfRows":,"pageNo":,"totalCount":} 이런식으로 반환
@@ -281,6 +287,9 @@ public class FindServiceImpl implements FindService {
         //response
         ResponseEntity<String> result = restTemplate.exchange(uri.toUri(), HttpMethod.GET, new HttpEntity<String>(headers), String.class);
 
+
+
+
         if (result.getBody() != null) {
             //json parser
             JSONParser parser = new JSONParser();
@@ -289,7 +298,7 @@ public class FindServiceImpl implements FindService {
             JSONArray features = (JSONArray) object.get("features");
 
             List<StairDto> dtos = new ArrayList<>(); //리스트에 담을 dtos 선언
-
+            int j = 0;
             //배열 크기만큼 반복
             for (int i = 0; i < features.size(); i++) {
                 StairDto stairDto = new StairDto();
@@ -309,6 +318,7 @@ public class FindServiceImpl implements FindService {
                 Double endlatitude = (Double) attributes.get("endlatitude"); //끝위도
                 Double endlongitude = (Double) attributes.get("endlongitude"); //끝경도
 
+
                 //일단 테스트로 이제 가공한 데이터를 stairDto에 저장
                 stairDto.setObjectid(objectid);
                 stairDto.setCtprvnnm(ctprvnnm);
@@ -321,8 +331,22 @@ public class FindServiceImpl implements FindService {
                 stairDto.setEndlatitude(endlatitude);
                 stairDto.setEndlongitude(endlongitude);
 
-                dtos.add(i, stairDto);
+                //System.out.println("오류나냐?:"+rdnmadr);
+                Pattern str_a = Pattern.compile("아파트");
+                if(rdnmadr==null){
+                    dtos.add(j, stairDto);
+                    j+=1;
+                }
+                else {
+                    Matcher matcher = str_a.matcher(rdnmadr);
+                    if (!matcher.find()) {
+                        //System.out.println(rdnmadr);
+                        dtos.add(j, stairDto);
+                        j += 1;
+                    }
+                }
             }
+//            System.out.println(j);
             return dtos;
         } else {
             return null;
