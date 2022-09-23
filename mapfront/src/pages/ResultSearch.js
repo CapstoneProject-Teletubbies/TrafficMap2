@@ -269,11 +269,11 @@ function ResultSearch() {
         }
 
         function createmarker(){  // 현재 위치 표시 마커 생성
-          var marker
+          var marker;
           if(marker){
             marker.setMap(null);
           }
-          marker = new Tmapv2.Marker({
+          var marker = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(${lat}, ${lng}),
             icon: "${mylocation}",
             iconSize: new Tmapv2.Size(40, 40),
@@ -319,7 +319,18 @@ function ResultSearch() {
           //searchmarker();
           console.log("Init false");
         }
-        createmarker();  
+        
+        var mymarker;
+        if(mymarker){
+          mymarker.setMap(null);
+        }
+        loc = new Tmapv2.LatLng(${lat}, ${lng});
+        mymarker = new Tmapv2.Marker({
+          position: loc,
+          icon: "${mylocation}",
+          iconSize : new Tmapv2.Size(40, 40),
+          map: locationmap
+        }) 
 
         if(locationmap && ${zoomin}){
           locationmap.zoomIn();
