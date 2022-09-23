@@ -269,9 +269,14 @@ function ResultSearch() {
         }
 
         function createmarker(){  // 현재 위치 표시 마커 생성
-          var marker = new Tmapv2.Marker({
+          var marker
+          if(marker){
+            marker.setMap(null);
+          }
+          marker = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(${lat}, ${lng}),
             icon: "${mylocation}",
+            iconSize: new Tmapv2.Size(40, 40),
             map: locationmap
           })
         }
@@ -308,13 +313,13 @@ function ResultSearch() {
         if(!locationmap && ${lat} && ${plength}){     //지도생성, 마커생성
           var mylocation = {lat: ${lat}, lng: ${lng}};
           locationmap = initTmap(mylocation);
-          createmarker();  
           searchmarker();
         }
         else{
           //searchmarker();
           console.log("Init false");
         }
+        createmarker();  
 
         if(locationmap && ${zoomin}){
           locationmap.zoomIn();
@@ -330,7 +335,7 @@ function ResultSearch() {
     script.type = "text/javascript";
     script.async = "async";
     document.head.appendChild(script);
-  }, [handleSuccess]);
+  }, [handleSuccess, location]);
 
   useEffect(()=>{ //~방향인 애들 없애기
     console.log('setBuildingList');
@@ -352,6 +357,7 @@ function ResultSearch() {
         height: "100%",
         width: "100%",
         position: "fixed",
+        
       }}
     >
     </div>
@@ -363,19 +369,19 @@ function ResultSearch() {
         <p id="result_mouse" />
     </div>
 
-    <div className="left">
+    <div className="left" style={{zIndex: "3"}}>
       <div className="mylocation">
         {/* <Button onClick={handleLocationButton} src={target}/> */}
-        <button onClick={handleLocationButton} style={{backgroundColor: "white", borderRadius: "7px", height: "45px"}}><img src={mytarget} style={{width: "120%", height: "87%", left: "-2px"}}></img></button>
+        <button className="targetbutton" onClick={handleLocationButton} style={{backgroundColor: "white", borderRadius: "7px", border:"none", height: "45px"}}><img src={mytarget} style={{width: "120%", height: "87%", left: "-3px"}}></img></button>
       </div>
     </div>
 
-    <div className="rightbarbutton">
+    <div className="rightbarbutton" style={{zIndex: "3"}}>
       <div className="zoom">
         {/* <Button onClick={handlePlusButton} src={plus}/>
         <Button onClick={handleMinusButton} src={minus}/> */}
-        <button onClick={handlePlusButton} style={{backgroundColor: "white", borderRadius: "7px", width: "42px"}}><img src={plussign} style={{width: "100%", height: "80%"}}></img></button>
-        <button onClick={handleMinusButton} style={{backgroundColor: "white", borderRadius: "7px", marginTop: "5px", width: "42px"}}><img src={minussign} style={{width: "100%", height: "80%"}}></img></button>
+                <button className="plusbutton" onClick={handlePlusButton} style={{backgroundColor: "#A6A6A6", border: "none", opacity: "0.8", borderRadius: "50px",  width: "42px", right: "-1px",}}><img src={plussign} style={{width: "80%", height: "70%"}}></img></button>
+        <button className="minusbutton" onClick={handleMinusButton} style={{backgroundColor: "#A6A6A6", border: "none", opacity: "0.8",  borderRadius: "50px",  marginTop: "10px", width: "42px", right: "-1px",}}><img src={minussign} style={{width: "80%", height: "70%"}}></img></button>
       </div>
     </div>
 
@@ -383,7 +389,7 @@ function ResultSearch() {
     </div>
     <div id="test1" style={{position: "fixed", top: "0px", zIndex: "10", zIndex: "0"}}>
     </div>
-    <div className="Infobar" ref={outsideRef} style={{position: "fixed", bottom: "0px"}}>
+    <div className="Infobar" ref={outsideRef} style={{position: "fixed", top: "0px", zIndex: "0"}}>
       
       {choosemarker && <BuildingDetailInfo props={buildingList[choosemarker]} findway={null} whole={{props: {mylocation: location, name: buildingList[choosemarker].name, obj: buildingList[choosemarker]}}} subway={null} mylocation={location}/>}
       {/* <BuildingDetailInfo props={building.state}/> */}

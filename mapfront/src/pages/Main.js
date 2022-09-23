@@ -269,7 +269,7 @@ function Main() {
       if(testmap && !markers){
       $.ajax({                //계단 받아옴
         method: "POST",
-        url: "https://dev.chaerin.shop:9000/api/find/stair",
+        url: "http://localhost:9000/api/find/stair",
         async: false,
         data: {
 
@@ -351,9 +351,9 @@ function Main() {
     </div>
 
     <div className="search">
-        <SearchBar onChange={handleKeyword} placeholder={'장소, 버스, 지하철, 주소 검색'} location={location} src={'/search'} style={{boxShadow: "1px 1px 20px 1px #D5D5D5", borderRadius: "10px", height: "38px"}}/>
+        <SearchBar onChange={handleKeyword} placeholder={'장소, 버스, 지하철, 주소 검색'} location={location} src={'/search'} style={{boxShadow: "1px 1px 20px 1px #D5D5D5", borderRadius: "10px", height: "40px"}}/>
         {/* <Button onClick={handleNavButton} src={nav}></Button> */}
-        <button onClick={handleNavButton} style={{backgroundColor: "white", opacity: "0.8", border: "none", top: "-1px", borderRadius: "8px", width: "42px", right: "-1px", marginLeft: "5px", boxShadow: "1px 1px 9px 1px #A6A6A6"}}><img src={nav} style={{width: "117%", height: "110%", left: "-2px"}}></img></button>
+        <button className="navbutton" onClick={handleNavButton} style={{backgroundColor: "white", opacity: "1", border: "none", top: "-1px", borderRadius: "8px", width: "42px", right: "-1px", marginLeft: "5px", }}><img src={nav} style={{width: "117%", height: "110%", left: "-2px"}}></img></button>
     </div>
     <div id="test">
         <p id="result" />
@@ -363,19 +363,19 @@ function Main() {
     <div className="left">
       <div className="mylocation">
         {/* <Button onClick={handleLocationButton} src={target}/> */}
-        <button onClick={handleLocationButton} style={{backgroundColor: "white", borderRadius: "7px", border:"none", boxShadow:"1px 1px 7px 1px gray", height: "45px"}}><img src={mytarget} style={{width: "120%", height: "87%", left: "-3px"}}></img></button>
+        <button className="targetbutton" onClick={handleLocationButton} style={{backgroundColor: "white", borderRadius: "7px", border:"none", height: "45px"}}><img src={mytarget} style={{width: "120%", height: "87%", left: "-3px"}}></img></button>
       </div>
 
     </div>
     
-    <SideBar onCheck={onCheckedElement} >{LIST}{onCheckedElement}</SideBar>
+    {<SideBar onCheck={onCheckedElement} >{LIST}{onCheckedElement}</SideBar>}
     
     <div className="rightbarbutton">
       <div className="zoom">
         {/* <Button onClick={handlePlusButton} src={plus}/> */}
         {/* <Button onClick={handleMinusButton} src={minus}/> */}
-        <button onClick={handlePlusButton} style={{backgroundColor: "#A6A6A6", opacity: "0.8", borderRadius: "50px",  width: "42px", right: "-1px", boxShadow: "1px 1px 9px #A6A6A6"}}><img src={plussign} style={{width: "80%", height: "70%"}}></img></button>
-        <button onClick={handleMinusButton} style={{backgroundColor: "#A6A6A6", opacity: "0.8",  borderRadius: "50px",  marginTop: "10px", width: "42px", right: "-1px", boxShadow: "1px 1px 9px #A6A6A6"}}><img src={minussign} style={{width: "80%", height: "70%"}}></img></button>
+        <button className="plusbutton" onClick={handlePlusButton} style={{backgroundColor: "#A6A6A6", border: "none", opacity: "0.8", borderRadius: "50px",  width: "42px", right: "-1px",}}><img src={plussign} style={{width: "80%", height: "70%"}}></img></button>
+        <button className="minusbutton" onClick={handleMinusButton} style={{backgroundColor: "#A6A6A6", border: "none", opacity: "0.8",  borderRadius: "50px",  marginTop: "10px", width: "42px", right: "-1px",}}><img src={minussign} style={{width: "80%", height: "70%"}}></img></button>
         {/* <SideBar /> */}
       </div>
     </div>

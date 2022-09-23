@@ -2,6 +2,8 @@ import React from 'react';
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Navigation, Pagination } from "swiper";
 
+import {MapInteractionCSS} from 'react-map-interaction';
+
 import "swiper/swiper.min.css"
 import '../css/modal.css';
 
@@ -51,8 +53,10 @@ const Modal = (props) => {
               console.log(line+obj+'.png');
               return(
                 <SwiperSlide>
+                  <MapInteractionCSS minScale="1" translationBounds={{xMin: 0, xMax: 0, yMin: 0, yMax: 0}}>
                   <img src={line+obj+'.png'}
                 style={{width: "100%", height: "100%", objectFit: "contain"}}></img>
+                </MapInteractionCSS>
                 </SwiperSlide>
               );
             })}
@@ -60,7 +64,9 @@ const Modal = (props) => {
           }
           {!Array.isArray(url) && url &&
           <div style={swiperStyle}>
+            <MapInteractionCSS minScale="1">
             <img src={url} style={{position: "relative", width: "100%", height: "100%", objectFit: "contain"}}></img>
+            </MapInteractionCSS>
           </div>}
           {!url && 
             <div style={{position: "relative", top: "40%"}}>

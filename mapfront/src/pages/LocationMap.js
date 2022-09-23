@@ -5,8 +5,8 @@ import '../css/Main.css';
 import SearchBar from "../components/SearchBar";
 import Button from "../components/Button";
 import getLocation from '../getLocation';
-import plus from "../images/plus.png";
-import minus from "../images/minus.png"
+import plus from "../images/plussign.png";
+import minus from "../images/minussign.png"
 import target from "../images/location.png"
 import BuildingDetailInfo from "../components/BuildingDetailInfo"
 import BusStopDetailInfo from '../components/BusStopDetailInfo';
@@ -234,14 +234,21 @@ function LocationMap() {
         if(!locationmap && ${lat} && ${blat}){
           var mylocation = {lat: ${blat}, lng: ${blng}};
           locationmap = initTmap(mylocation);
-          createmarker(${lat}, ${lng}, "${mylocation}", 40, 40);
-          createmarker(${blat}, ${blng}, "${icon}", 40, 60);  
+          // createmarker(${lat}, ${lng}, "${mylocation}", 40, 40);
+          createmarker(${blat}, ${blng}, "${icon}", 32 , 48);  
         }
-        else if(${refresh}){
-          
-        }else{
-          console.log("이미 지도 나와있어");
+
+        var mymarker;
+        if(mymarker){
+          mymarker.setMap(null);
         }
+        loc = new Tmapv2.LatLng(${lat}, ${lng});
+        mymarker = new Tmapv2.Marker({
+          position: loc,
+          icon: "${mylocation}",
+          iconSize : new Tmapv2.Size(40, 40),
+          map: locationmap
+        })
 
         if(locationmap && ${zoomin}){
           locationmap.zoomIn();
@@ -257,7 +264,7 @@ function LocationMap() {
     script.type = "text/javascript";
     script.async = "async";
     document.head.appendChild(script);
-  }, [handleSuccess]);
+  }, [handleSuccess, location]);
 
   return (
     <main style={{overflow: "hidden"}}>
@@ -307,8 +314,8 @@ function LocationMap() {
 
     <div className="rightbarbutton">
       <div className="zoom">
-        <Button onClick={handlePlusButton} src={plus}/>
-        <Button onClick={handleMinusButton} src={minus}/>
+      <button className="plusbutton" onClick={handlePlusButton} style={{backgroundColor: "#A6A6A6", border: "none", opacity: "0.8", borderRadius: "50px",  width: "42px", right: "-1px",}}><img src={plus} style={{width: "80%", height: "70%"}}></img></button>
+        <button className="minusbutton" onClick={handleMinusButton} style={{backgroundColor: "#A6A6A6", border: "none", opacity: "0.8",  borderRadius: "50px",  marginTop: "10px", width: "42px", right: "-1px",}}><img src={minus} style={{width: "80%", height: "70%"}}></img></button>
         {/* <SideBar /> */}
       </div>
     </div>
