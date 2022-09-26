@@ -16,6 +16,7 @@ import mytarget from "../images/target.png"
 import nav from "../images/nav.png";
 import stairs from "../images/stairs.png";
 import elevator from "../images/elevator.png";
+import charging from "../images/charging_station_icon.png"
 
 import mylocation from "../images/mylocation.png";
 
@@ -33,6 +34,7 @@ function Main() {
 
     const [checkedList, setCheckedList] = useState([]);
     const [checked, setChecked] = useState(false);
+    const [wheelchecked, setWheelChecked] = useState(false);
 
     const onCheckedElement = (checked, item) => {
       if(checked){
@@ -45,6 +47,16 @@ function Main() {
         setChecked(false);
       }
     };
+
+    const onCheckedWheel = (wheelchecked, item) => {
+      if(wheelchecked){
+        console.log("휠체어~체크");
+        setWheelChecked(true);
+      }else if(!wheelchecked){
+        console.log("휠체어 노체크~");
+        setWheelChecked(false);
+      }
+    }
 
     const onRemove = item => {
       setCheckedList(checkedList.filter(el => el !== item));
@@ -203,6 +215,20 @@ function Main() {
         var zoomIn;
         var marker, markerCluster;
 
+        var latlon;
+
+        if(!latlon){
+          latlon = [{lat: 37.44738908, lon: 126.7306811}, {lat: 37.44765055, lon: 126.7124925}, {lat: 37.45611315, lon: 126.7133538},
+                      {lat: 37.46398002, lon: 126.710947}, {lat: 37.46611111, lon: 126.714686}, {lat: 37.467324, lon: 126.699152},
+                      {lat: 37.4613873, lon: 126.7311568}, {lat: 37.43588036, lon: 126.7473614}, {lat: 37.42791756, lon: 126.7507057},
+                      {lat: 37.43010131, lon: 126.7159454}, {lat: 37.40422829, lon: 126.7163979}, {lat: 37.39776762, lon: 126.7263901},
+                      {lat: 37.44789883, lon: 126.7370578}, {lat: 37.39176155, lon: 126.7217373}, {lat: 37.42468926, lon: 126.7533209},
+                      {lat: 37.45514557, lon: 126.701585}, {lat: 37.44854249, lon: 126.7530631}, {lat: 37.45587968, lon: 126.7195142},
+                      {lat: 37.4574194, lon: 126.7023421}, {lat: 37.45688086, lon: 126.7013016}, {lat: 37.46964954, lon: 126.7081713},
+                      {lat: 37.44944591, lon: 126.7011633}, {lat: 37.45678003, lon: 126.7104966}, {lat: 37.45521033, lon: 126.7315437},
+                      {lat: 37.44817192, lon: 126.7366364}, {lat: 37.43963366, lon: 126.7598083}];
+        }
+        
         function initTmap(pos) {
             var map = new Tmapv2.Map("TMapApp", {
                 center: new Tmapv2.LatLng(pos.lat, pos.lng),
@@ -265,6 +291,35 @@ function Main() {
         testmap.setCenter(setmylocation);
       }
 
+      //////////////////////////////////////////////////////////////////////////////////////////////
+      var wheelmarker;
+      var wheelmarkers;
+      if(testmap && !wheelmarkers && latlon){
+        wheelmarkers = [];
+        for(var i = 0; i < 26; i++){
+          wheelmarker = new Tmapv2.Marker({
+            position: new Tmapv2.LatLng(latlon[i].lat, latlon[i].lon),
+            icon: "${charging}",
+            iconSize: new Tmapv2.Size(15, 15),
+            // map: testmap
+          });
+
+          wheelmarkers.push(wheelmarker);
+        }
+      }
+
+      if(wheelmarkers && ${wheelchecked}){
+        for(var i = 0; i < wheelmarkers.length; i++){
+          wheelmarkers[i].setMap(testmap);
+        }
+      }else if(wheelmarkers && !${wheelchecked}){
+        for(var i = 0; i < wheelmarkers.length; i++){
+          wheelmarkers[i].setMap(null);
+        }
+      }
+
+      //////////////////////////////////////////////////////////////////////////////////////////////
+
       var markers;
       if(testmap && !markers){
       $.ajax({                //계단 받아옴
@@ -275,10 +330,7 @@ function Main() {
 
         },
         success: function(res){
-          console.log(res);
           if(markers){
-            console.log("마커 지워야해");
-            console.log(markers);
             for(var i = 0; i < markers.length; i++){
               markers[i].setMap(null);
             }
@@ -366,7 +418,7 @@ function Main() {
 
     </div>
     
-    {<SideBar onCheck={onCheckedElement} >{LIST}{onCheckedElement}</SideBar>}
+    {<SideBar onCheck={onCheckedElement} onCheckWheel={onCheckedWheel} >{LIST}{onCheckedElement}</SideBar>}
     
     <div className="rightbarbutton">
       <div className="zoom">

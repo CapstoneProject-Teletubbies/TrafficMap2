@@ -14,6 +14,7 @@ import walk from "../images/walkp.png";
 import bus from "../images/bus.png";
 import mymarker from "../images/mylocation.png";
 import stairs from "../images/stairs.png";
+import charging from "../images/charging_station_icon.png"
 
 
 const baseurl = 'https://dev.chaerin.shop:9000/'         //베이스 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -41,14 +42,22 @@ function FindWay(props){
 
     const [checked, setChecked] = useState(false);
 
+    const [check, setCheck] = useState(false);
+    const [wheelchecked, setWheelChecked] = useState(false);
+
     const onCheckedElement = (checked, item) => {
       if(checked){
-        console.log("체크");
         setChecked(true);
       }else if(!checked){
-        console.log("체크 안돼있음");
         setChecked(false);
       }
+    };
+    const onCheckedWheel = (wheelchecked, item) => {
+        if(wheelchecked){
+          setWheelChecked(true);
+        }else if(!wheelchecked){
+          setWheelChecked(false);
+        }
     };
 
     const LIST = [
@@ -61,14 +70,11 @@ function FindWay(props){
     const mylocation = location.state.mylocation;
 
     const handleSuccess = (pos) => {                //현재 내 위치 받아오기
-        console.log("@@//////////////내위치 받아옴//////////////@@@");
         const {latitude, longitude } = pos.coords;
 
         if(!startPlace){
-            console.log("스타트 플레이스 없음");
             reverseGeocoding(latitude, longitude);
         }else{
-            console.log("스타ㅡㅌ플레이스가 있냐?");
             console.log(startPlace);
             console.log(findLocation);
         }
@@ -114,7 +120,6 @@ function FindWay(props){
             startX : startlng, startY : startlat, endX : endlng, endY : endlat, startName : "출발지", endName : "도착지", option : '0'
         }}).then(function(res){
             setRoute(res.data);
-            console.log("@@@@@@@@@@@@@@@@@@@길찾기 실행했다!@@@@@@@@@@@@@@@@@");
         }).catch(function(err){
             console.log("길찾기 실패");
         })
@@ -148,7 +153,6 @@ function FindWay(props){
     }
 
     useEffect(()=>{
-        console.log("////////////////////////////////////////");
         if(location.state.mystartlocation){
             console.log(location.state.mystartlocation);
             setStartPlaceHolder(location.state.mystartlocation);
@@ -312,6 +316,20 @@ function FindWay(props){
             var checki;
             var marker_myl;
             var markerCluster;
+
+            var latlon;
+
+            if(!latlon){
+                latlon = [{lat: 37.44738908, lon: 126.7306811}, {lat: 37.44765055, lon: 126.7124925}, {lat: 37.45611315, lon: 126.7133538},
+                      {lat: 37.46398002, lon: 126.710947}, {lat: 37.46611111, lon: 126.714686}, {lat: 37.467324, lon: 126.699152},
+                      {lat: 37.4613873, lon: 126.7311568}, {lat: 37.43588036, lon: 126.7473614}, {lat: 37.42791756, lon: 126.7507057},
+                      {lat: 37.43010131, lon: 126.7159454}, {lat: 37.40422829, lon: 126.7163979}, {lat: 37.39776762, lon: 126.7263901},
+                      {lat: 37.44789883, lon: 126.7370578}, {lat: 37.39176155, lon: 126.7217373}, {lat: 37.42468926, lon: 126.7533209},
+                      {lat: 37.45514557, lon: 126.701585}, {lat: 37.44854249, lon: 126.7530631}, {lat: 37.45587968, lon: 126.7195142},
+                      {lat: 37.4574194, lon: 126.7023421}, {lat: 37.45688086, lon: 126.7013016}, {lat: 37.46964954, lon: 126.7081713},
+                      {lat: 37.44944591, lon: 126.7011633}, {lat: 37.45678003, lon: 126.7104966}, {lat: 37.45521033, lon: 126.7315437},
+                      {lat: 37.44817192, lon: 126.7366364}, {lat: 37.43963366, lon: 126.7598083}];
+            }
     
             function initTmap() {
                 map = new Tmapv2.Map("TMapApp", {
@@ -322,13 +340,6 @@ function FindWay(props){
                     zoomControl: false,
                     zoom:13,
                 });
-                // 출발 마커
-                if(marker_s){
-                    marker_s.setMap(null);
-                }
-                if(marker_e){
-                    marker_e.setMap(null);
-                }
 
                 marker_s = new Tmapv2.Marker(
                     {
@@ -346,15 +357,15 @@ function FindWay(props){
                         iconSize : new Tmapv2.Size(24, 38),
                         map : map
                 });
-
-                
+               
                 var polyline4;
                 
                 console.log(checki);
                 if(!checki){
-                console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-                checki = 10;
-                $.ajax({
+                    console.log("그거 시작임@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                    checki = 10;
+                    ${setCheck(true)};
+                    $.ajax({
                     method: "POST",
                     url : "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json&callback=result",
                     async: false,
@@ -485,10 +496,12 @@ function FindWay(props){
                 resultdrawArr.push(polyline_);
             }
 
-            if(${both}){      
+            if(${both}){  
+                console.log("both!@@@@!@!@!@!@!@!@!@!@!@!@!@!@");   
                 if(!checki){
-                    map = initTmap(); 
+                    map = initTmap();
                 } 
+
             }       
  
             if(marker_myl){
@@ -506,7 +519,7 @@ function FindWay(props){
             if(map && !markers){
             $.ajax({                //계단 받아옴
               method: "POST",
-              url: "https://dev.chaerin.shop:9000/api/find/stair",
+              url: "https://dev.chaerin.shop:9000/",
               async: false,
               data: {
       
@@ -563,6 +576,33 @@ function FindWay(props){
             console.log(markers);
       
           }
+          //////////////////////////////////////////////////////////////////////////////////////////////
+          var wheelmarker;
+          var wheelmarkers;
+          if(map && !wheelmarkers && latlon){
+            wheelmarkers = [];
+            for(var i = 0; i < 26; i++){
+              wheelmarker = new Tmapv2.Marker({
+                position: new Tmapv2.LatLng(latlon[i].lat, latlon[i].lon),
+                icon: "${charging}",
+                iconSize: new Tmapv2.Size(15, 15),
+                // map: map
+              });
+    
+              wheelmarkers.push(wheelmarker);
+            }
+          }
+    
+          if(wheelmarkers && ${wheelchecked}){
+            for(var i = 0; i < wheelmarkers.length; i++){
+              wheelmarkers[i].setMap(map);
+            }
+          }else if(wheelmarkers && !${wheelchecked}){
+            for(var i = 0; i < wheelmarkers.length; i++){
+              wheelmarkers[i].setMap(null);
+            }
+          }
+          //////////////////////////////////////////////////////////////////////////////////////////////
  
         `;
         script.type = "text/javascript";
@@ -572,12 +612,12 @@ function FindWay(props){
 
 
     return(
-        <div style={{position: "fixed", width: "100%", height: "100%", backgroundColor: "#D5D5D5"}}>
+        <div style={{position: "fixed", width: "100%", height: "100%", backgroundColor: "#D5D5D5", zIndex: "0"}}>
 
-            {<ElevatorAndStair onCheck={onCheckedElement}>{LIST}{onCheckedElement}</ElevatorAndStair>}
+            {both && <ElevatorAndStair onCheck={onCheckedElement} onCheckWheel={onCheckedWheel}>{LIST}{onCheckedElement}</ElevatorAndStair>}
 
             <div className= "row align-items-center" id="findwayheader" style={{position: "relative", width: "100%", margin: "0px", display: "flex"
-                , backgroundColor: "white", boxShadow: "1px 1px 20px 1px gray", zIndex: "1"}}>
+                , backgroundColor: "white", boxShadow: "1px 1px 20px 1px gray", zIndex: "3"}}>
                 <div className='col-11' style={{position: "relative", textAlign: "-webkit-left"}}>
                     <SearchBar style={{border: "1px solid gray", borderRadius: "6px", margin: "5px", marginTop: "12px", width: "100%", }} color="black" placeholder={startplaceholder} location={mylocation} src={'/find-search'} id={'start'} endPlace={endPlace}></SearchBar>
                     <SearchBar style={{border: "1px solid gray", borderRadius: "6px", margin: "5px", marginBottom: "12px",  width: "100%", }} placeholder={endplaceholder} location={mylocation} src={'/find-search'} id={'end'} startPlace={startPlace}></SearchBar>
