@@ -519,7 +519,7 @@ function FindWay(props){
             if(map && !markers){
             $.ajax({                //계단 받아옴
               method: "POST",
-              url: "https://dev.chaerin.shop:9000/",
+              url: "https://dev.chaerin.shop:9000/api/find/stair",
               async: false,
               data: {
       
@@ -556,7 +556,9 @@ function FindWay(props){
               }
             })
           }else{
-            if(${checked}){
+            var ck;
+            if(${checked} && !ck){
+                ck = true;
               for(var i = 0; i < markers.length; i++){
                 markers[i].setMap(map);
               }
@@ -565,7 +567,8 @@ function FindWay(props){
                 // icons: "${stairs}",
                 map: map
               });
-            }else if(markers && !${checked}){
+            }else if(ck && !${checked}){
+                ck = false;
               if(markerCluster){
                 markerCluster.destroy();
               }
@@ -593,15 +596,20 @@ function FindWay(props){
             }
           }
     
-          if(wheelmarkers && ${wheelchecked}){
+          if(wheelmarkers){
+            var ch;
+          if(!ch && ${wheelchecked}){
+            ch = true;
             for(var i = 0; i < wheelmarkers.length; i++){
               wheelmarkers[i].setMap(map);
             }
-          }else if(wheelmarkers && !${wheelchecked}){
+          }else if(ch && !${wheelchecked}){
+            ch = false;
             for(var i = 0; i < wheelmarkers.length; i++){
               wheelmarkers[i].setMap(null);
             }
           }
+        }
           //////////////////////////////////////////////////////////////////////////////////////////////
  
         `;
