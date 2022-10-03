@@ -15,6 +15,7 @@ import bus from "../images/bus.png";
 import mymarker from "../images/mylocation.png";
 import stairs from "../images/stairs.png";
 import charging from "../images/charging_station_icon.png"
+import elevator from "../images/elevator.png";
 
 
 const baseurl = 'https://dev.chaerin.shop:9000/'         //베이스 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -44,6 +45,8 @@ function FindWay(props){
 
     const [check, setCheck] = useState(false);
     const [wheelchecked, setWheelChecked] = useState(false);
+
+    const [sideWidth, setSideWidth] = useState();
 
     const onCheckedElement = (checked, item) => {
       if(checked){
@@ -164,6 +167,8 @@ function FindWay(props){
 
 
     useEffect(()=>{
+        setSideWidth((window.innerWidth)*0.85);
+
         console.log(route);
         var i = 0;
         if(route){
@@ -193,7 +198,8 @@ function FindWay(props){
                 setStartPlaceHolder(location.state.startBuilding.name);  //출발지 이름
             }
             if(location.state.endBuilding){    
-                console.log("도착지 정보 왔어요");
+                var ep = endPlace;
+                console.log(ep);
                 setEndPlace(location.state.endBuilding);              //도착지 정보
                 setEndPlaceHolder(location.state.endBuilding.name);   //도착지 이름
             }  
@@ -310,6 +316,7 @@ function FindWay(props){
         script.innerHTML = `
             var map;
             var marker_s, marker_e, marker_p1, marker_p2;
+            var elevatormks;
             var totalMarkerArr = [];
             var drawInfoArr = [];
             var resultdrawArr = [];
@@ -349,6 +356,8 @@ function FindWay(props){
                     zoomControl: false,
                     zoom:13,
                 });
+
+                map.addListener("zoom_changed", onZoomChanged);
 
                 marker_s = new Tmapv2.Marker(
                     {
@@ -487,6 +496,21 @@ function FindWay(props){
                 return map;
             }
 
+            function onZoomChanged(e) {
+                if(elevatormks){
+                  console.log(map.getZoom());
+                  if(map.getZoom()>15){
+                    for(var i = 0; i < elevatormks.length; i++){
+                      elevatormks[i].setMap(map);
+                    }
+                  }else{
+                    for(var i = 0; i < elevatormks.length; i++){
+                      elevatormks[i].setMap(null);
+                    }
+                  }
+                }
+              }
+
             function addComma(num) {
                 var regexp = /\B(?=(\d{3})+(?!\d))/g;
                 return num.toString().replace(regexp, ',');
@@ -504,6 +528,38 @@ function FindWay(props){
                 });
                 resultdrawArr.push(polyline_);
             }
+
+            if(map && !elevatormks){        //엘레베이터 받아옴
+                $.ajax({
+                  method: "POST",
+                  url: "https://dev.chaerin.shop:9000/api/find/incheonElevator",
+                  async: false,
+                  data: {
+        
+                  },
+                  success: function(res){
+                    console.log(res);
+        
+                    elevatormks = [];
+                    for(var i = 0; i < res.length; i++){
+                      var lat = res[i].latitude;
+                      var lng = res[i].longitude;
+        
+                      var markerevt = new Tmapv2.Marker({
+                        position: new Tmapv2.LatLng(lat, lng),
+                        icon: "${elevator}",
+                        iconSize: new Tmapv2.Size(15, 15),
+                        // map: map
+                      });
+                      elevatormks.push(markerevt);
+                    }
+                  },
+                  error: function(err){
+                    console.log("엘리베이터 못받아옴");
+                  }
+                })
+                
+              }
 
             if(${both}){  
                 console.log("both!@@@@!@!@!@!@!@!@!@!@!@!@!@!@");   
@@ -554,7 +610,7 @@ function FindWay(props){
                     position: new Tmapv2.LatLng(lat, lng),
                     icon: "${stairs}",
                     iconSize: new Tmapv2.Size(15, 15),
-                    //map: testmap
+                    //map: map
                   });
                   
                   markers.push(markerone);
@@ -625,7 +681,7 @@ function FindWay(props){
         script.type = "text/javascript";
         script.async = "async";
         document.head.appendChild(script);
-    }, [handleSuccess, both, findLocation]);
+    }, [handleSuccess, both, findLocation, startPlace, endPlace]);
 
 
     return(
@@ -660,7 +716,7 @@ function FindWay(props){
               }}>
                 
             </div>
-            <SideBar totalDistance={totalDistance} totalTime={totalTime} start={startPlace} end={endPlace}>{routeDetail}</SideBar>
+            <SideBar width={sideWidth} totalDistance={totalDistance} totalTime={totalTime} start={startPlace} end={endPlace}>{routeDetail}</SideBar>
             </body>}
             <UrlModal open={modalOpen} close={closeModal} connect={urlModal}>  
             </UrlModal>
